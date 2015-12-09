@@ -13,18 +13,24 @@
 	TODO: unresolved issues
 	</string>
 
+
 	<key>fileTypes</key>
 	<array>
 		<string>onyx</string>
+		<string>ox</string>
+		<string>onyq</string>
 	</array>
 
+
+
 	<key>firstLineMatch</key>
-	<string>^#!/.*\bonyx</string>
+	<string>^#!/.*\b(onyx|ox)</string>
+
 
 	<key>foldingStartMarker</key>
 	<string>(?x)^
 	    (\s*+
-	        ((?:abstract )?module|mixin|class|struct|type|def(?!.*\bend\s*$)
+	        ((?:abstract )?module|trait|mixin|class|struct|type|enum|def(?!.*\bend\s*$)
 	        |unless|if
 	        |case
 	        |begin
@@ -36,8 +42,8 @@
 	         )*
 	         (
 	         	\s
-	         	(do|begin|case)
-	         	| (?&lt;!\$)[-+=&amp;|*/~%^&lt;&gt;~] \s*+ (if|unless)
+	         	(do|begin|case|try|ensure|fulfil)
+	         	| (?&lt;!-\$)[-+=&amp;|*/~%^&lt;&gt;~] \s*+ (if|unless)
 	         )
 	        )\b
 	        (?! [^;]*+ ; .*? \bend\b )
@@ -49,7 +55,7 @@
 	     | \[ (?! [^\]]*+ \] )
 	     )
 	    ).*$
-	|   -- .*? \(fold\) \s*+ $         # Sune’s special marker
+		# |   -- .*? \(fold\) \s*+ $         # Sune’s special marker
 	</string>
 
 	<key>foldingStopMarker</key>
@@ -57,7 +63,7 @@
 		(   (^|;) \s*+ end   \s*+ (-- .*)? $
 		|   (^|;) \s*+ end \. .* $
 		|   ^     \s*+ [}\]] ,? \s*+ (-- .*)? $
-		|   -- .*? \(end\) \s*+ $    # Sune’s special marker
+		# |   -- .*? \(end\) \s*+ $    # Sune’s special marker
 		|   ^=end
 		)</string>
 
@@ -67,31 +73,111 @@
 	<key>scopeName</key>
 	<string>source.onyx</string>
 
+
+
+	<!--
+
+	########     ###    ######## ######## ######## ########  ##    ##  ######
+	##     ##   ## ##      ##       ##    ##       ##     ## ###   ## ##    ##
+	##     ##  ##   ##     ##       ##    ##       ##     ## ####  ## ##
+	########  ##     ##    ##       ##    ######   ########  ## ## ##  ######
+	##        #########    ##       ##    ##       ##   ##   ##  ####       ##
+	##        ##     ##    ##       ##    ##       ##    ##  ##   ### ##    ##
+	##        ##     ##    ##       ##    ######## ##     ## ##    ##  ######
+
+	-->
+
 	<key>patterns</key>
 	<array>
 
-
-
-
-		<!-- dict>
-			<key>comment</key>
-			<string>FOOOOOOOO</string>
+		<dict>
 			<key>begin</key>
-			<string>(?x)
-				(?: [a-zA-Z_\x{80}-\x{10FFFF}] [-\x{80}-\x{10FFFF}\w] * (?: [?!%'] | =(?!&gt;) )? )
-
-
-				# make sure we've got the arrow finish - else it's not a fn-def!
-				(?=
-					(?: (?:\\\n) | [^\n] ) +
-					(?: [-=~][-=~]?&gt;(!?) )
-				)
-			</string>
+			<string>^=begin</string>
+			<key>captures</key>
+			<dict>
+				<key>0</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.comment.onyx</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>multiline comments</string>
 			<key>end</key>
-			<string>-></string>
+			<string>^=end</string>
 			<key>name</key>
-			<string>comment.onyx</string>
-		</dict -->
+			<string>comment.block.documentation.onyx</string>
+		</dict>
+
+		<dict>
+			<key>name</key>
+			<string>comment.line.parse-directive.onyx</string>
+			<key>match</key>
+			<string>(?x)
+				(?:
+					^[ \t]+
+				)?
+				(
+					--!\s
+				)
+				(
+					.*$
+				)
+				\n?</string>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.comment.onyx</string>
+				</dict>
+			</dict>
+		</dict>
+
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.comment.onyx</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>(?:^[ \t]+)?((?:(?:--)|\x{2014})\|\s).*$\n?</string>
+			<key>name</key>
+			<string>comment.line.doc.onyx</string>
+		</dict>
+
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.comment.onyx</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>invalid.illegal.TODO.onyx</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>(?x)
+				((?:\s|^)
+					(?:(?:--)|\x{2014})
+					(?:
+						.*(TODO|todo)?.*$
+					)
+					|
+					(?:
+						$
+					)
+				)</string>
+			<key>name</key>
+			<string>comment.line.onyx</string>
+		</dict>
 
 
 
@@ -99,7 +185,7 @@
 
 		<dict>
 			<key>comment</key>
-			<string>the method pattern comes from the symbol pattern, see there for a explaination</string>
+			<string>The Arrow style func def</string>
 
 			<key>contentName</key>
 			<string>   xxx.variable.parameter.function.onyx    </string>
@@ -157,7 +243,7 @@
 			         # make sure we've got the arrow finish - else it's not a fn-def!
 			         (?=
 			         	(?: (?:\\\n) | [^\n] ) +
-						(?: [-=~][-=~]?&gt;(!?) )
+						(?: -&gt;|--&gt;|==&gt;)([!@&gt;]|\s|\n)
 			         )
 	        </string>
 
@@ -176,7 +262,7 @@
 						!
 						|
 						(?:
-							[A-Z][\x{80}-\x{10FFFF}\w\[\]]*
+							[*A-Z][\x{80}-\x{10FFFF}\w&lt;&gt;\[\]]*
 						)
 					)
 				) ?
@@ -184,7 +270,7 @@
 				# A fn-def arrow
 				(?:\x{20}|(?:\\\n))*
 				(
-					[-=~][-=~]?&gt;(!?)
+					(?: -&gt;|--&gt;|==&gt;)[)}!@&gt;]*(?=[\t\s\n])
 				)
 			</string>
 
@@ -197,9 +283,9 @@
 						# Type annotation?
 						(?:\x{20}|(?:\\\n)) * ?
 						(?:
-							['`:.]
+							['`:.~^]
 							  |
-							\s(?=[A-Z\[])
+							\s(?=[A-Z&lt;\[])
 						)
 						(?:\x{20}|(?:\\\n)) *
 
@@ -212,28 +298,28 @@
 
 						# Type name / declaration
 						(?:
-							\[ ?
+							[&lt;\[] ?
 							# Name
 							(?:
-								[A-Z][\[\]\w\x{80}-\x{10FFFF}]*
+								[*A-Z][\[\]&lt;&gt;\w\x{80}-\x{10FFFF}]*
 							)
 							 |
 							# Sum Type
 							(?:
 								\(
 								(?:\x{20}|(?:\\\n))*
-								[A-Z][\[\]\w\x{80}-\x{10FFFF}]+
+								[*A-Z][\[\]&lt;&gt;\w\x{80}-\x{10FFFF}]+
 								(
 									(?:\x{20}|(?:\\\n))*
 									\|
 									(?:\x{20}|(?:\\\n))*
-									[A-Z] [\[\]\w\x{80}-\x{10FFFF}]*
+									[*A-Z] [\[\]&lt;&gt;\w\x{80}-\x{10FFFF}]*
 								)*
 								(?:\x{20}|(?:\\\n))*
 								\)
 								(?:\x{20}|(?:\\\n))*
 							)
-							\] ?
+							[&gt;\]] ?
 						) ?
 						# (?=[\),])
 					</string>
@@ -284,7 +370,442 @@
 				<key>2</key>
 				<dict>
 					<key>name</key>
-					<string>class.support.onyx</string>
+					<string>entity.name.function.onyx</string>
+					<!-- string>class.support.onyx</string -->
+				</dict>
+				<key>3</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.function.onyx</string>
+				</dict>
+				<key>4</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.parameters.onyx, keyword.control.secondary</string>
+				</dict>
+			</dict>
+
+			<key>endCaptures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.parameters.onyx, keyword.control.secondary</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>support.function.other.type-param.onyx</string>
+				</dict>
+				<key>3</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.parameters.onyx, keyword.control.secondary
+					</string>
+					<!-- <string>entity.name.function.onyx</string> -->
+				</dict>
+			</dict>
+
+		</dict>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		<dict>
+			<key>comment</key>
+			<string>Lambdas</string>
+
+			<key>contentName</key>
+			<string>   xxx.variable.parameter.function.onyx    </string>
+
+			<key>name</key>
+			<string>meta.function.method.with-arguments.onyx</string>
+
+			<key>begin</key>
+			<string>(?x)
+ 					 # the opening parenthesis for parameters
+			         ( \( )
+
+			         # make sure we've got the arrow finish - else it's not a fn-def!
+			         (?=
+			         	(?: (?:\\\n) | [^\n] ) +
+						(?: -&gt;|--&gt;|==&gt;)([!@&gt;]|\s|\n)
+			         )
+	        </string>
+
+			<key>end</key>
+			<string>(?x)
+				# Params ending parentheses
+				( \) )
+
+				# Possible return type
+				(
+					(?:\x{20}|(?:\\ \n))*
+					[:'`.]?
+					(?:\x{20}|(?:\\ \n))*
+					# *TODO* also grouping and pipe
+					(?:
+						!
+						|
+						(?:
+							[*A-Z][\x{80}-\x{10FFFF}\w&lt;&gt;\[\]]*
+						)
+					)
+				) ?
+
+				# A fn-def arrow
+				(
+					(?: -&gt;|--&gt;|==&gt;)[)}!@&gt;]*(?=[\t\s\n])
+				)
+			</string>
+
+			<key>patterns</key>
+			<array>
+
+				<dict>
+					<key>match</key>
+					<string>(?x)
+						# Type annotation?
+						(?:\x{20}|(?:\\\n)) * ?
+						(?:
+							['`:.~^]
+							  |
+							\s(?=[A-Z&lt;\[])
+						)
+						(?:\x{20}|(?:\\\n)) *
+
+						# Type manipulation modifier?
+						(?:
+							mut
+							(?= [\x{20}\),\\] )
+							(?:\x{20}|(?:\\\n))*
+						) ?
+
+						# Type name / declaration
+						(?:
+							[&lt;\[] ?
+							# Name
+							(?:
+								[*A-Z][\[\]&lt;&gt;\w\x{80}-\x{10FFFF}]*
+							)
+							 |
+							# Sum Type
+							(?:
+								\(
+								(?:\x{20}|(?:\\\n))*
+								[*A-Z][\[\]&lt;&gt;\w\x{80}-\x{10FFFF}]+
+								(
+									(?:\x{20}|(?:\\\n))*
+									\|
+									(?:\x{20}|(?:\\\n))*
+									[*A-Z] [\[\]&lt;&gt;\w\x{80}-\x{10FFFF}]*
+								)*
+								(?:\x{20}|(?:\\\n))*
+								\)
+								(?:\x{20}|(?:\\\n))*
+							)
+							[&gt;\]] ?
+						) ?
+						# (?=[\),])
+					</string>
+					<key>name</key>
+					<string>support.function.other.type-param.onyx</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>(?x)
+						(?&lt;=[^(, ])
+						(?:\x{20}|(?:\\\n))*
+						[\w\x{80}-\x{10FFFF}]+
+					</string>
+					<key>name</key>
+					<string>variable.other.constant.onyx</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>(?x)
+						(?&lt;=[\(,])
+						(?:\x{20}|(?:\\\n))*
+						(@?)[-a-z\x{80}-\x{10FFFF}] [\w\x{80}-\x{10FFFF}] *
+					</string>
+					<key>name</key>
+					<string>variable.parameter.function.onyx</string>
+				</dict>
+
+				<!-- dict>
+					<key>match</key>
+					<string>[,`´.:=]</string>
+					<key>name</key>
+					<string>punctuation.separator.object.onyx</string>
+				</dict -->
+
+				<!-- <dict>
+					<key>include</key>
+					<string>$self</string>
+				</dict> -->
+			</array>
+
+			<key>beginCaptures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.control.def.onyx</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.function.onyx</string>
+					<!-- string>class.support.onyx</string -->
+				</dict>
+				<key>3</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.function.onyx</string>
+				</dict>
+				<key>4</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.parameters.onyx, keyword.control.secondary</string>
+				</dict>
+			</dict>
+
+			<key>endCaptures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.parameters.onyx, keyword.control.secondary</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>support.function.other.type-param.onyx</string>
+				</dict>
+				<key>3</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.function.onyx</string>
+				</dict>
+			</dict>
+
+		</dict>
+
+
+
+
+<!-- 		« and »
+		<dict>
+			<key>match</key>
+			<string>\x{0BB}|\x{0AB}</string>
+			<key>name</key>
+			<string>keyword.operator.other.onyx</string>
+		</dict>
+ -->
+
+
+
+		<dict>
+			<key>comment</key>
+			<string>The OLD SCHOOL func def pattern (no arrow)</string>
+
+			<key>contentName</key>
+			<string>   xxx.variable.parameter.function.onyx    </string>
+
+			<key>name</key>
+			<string>meta.function.method.with-arguments.onyx</string>
+
+			<key>begin</key>
+			<string>(?x)
+			         (?&lt;=
+			         	^ |
+			         	\x{20} |
+			         	= |
+			         	\(
+			         )
+
+	  	         	 # the def keyword
+			         (
+		         		fx (?:\x{20}|(?:\\ \n)) |
+		         		fn (?:\x{20}|(?:\\ \n)) |
+		         		pr (?:\x{20}|(?:\\ \n)) |
+		         		my (?:\x{20}|(?:\\ \n)) |
+		         		ex (?:\x{20}|(?:\\ \n)) |
+
+		         		def (?:\x{20}|(?:\\ \n)) |
+		         		fun (?:\x{20}|(?:\\ \n)) |
+		         		own (?:\x{20}|(?:\\ \n)) |
+		         		api (?:\x{20}|(?:\\ \n)) |
+
+		         		proc (?:\x{20}|(?:\\ \n)) |
+		         		cfun (?:\x{20}|(?:\\ \n)) |
+		         		func (?:\x{20}|(?:\\ \n)) |
+		         		meth (?:\x{20}|(?:\\ \n)) |
+
+		         		\\ |
+
+		         		# *TODO* the lambda sym must be discounted in identifer of fn!
+
+		         		\x{03bb} |
+		         		\x{039b}
+			         )
+			         \s* # (?:\x{20}|(?:\\\n))*
+
+			         # complete pathed method name
+			         (?:
+			         	# a method name prefix / path
+			         	(
+				         	(?:
+				         		(?:[A-Z_\x{80}-\x{10FFFF}] [-\x{80}-\x{10FFFF}\w]*)|self (?: \.|::)
+				         	) *
+			         	)
+			           	(
+			           		(?:
+								# the method name
+			           			(?: [a-zA-Z_\x{80}-\x{10FFFF}] [-\x{80}-\x{10FFFF}\w] * (?: [?!%'] | =(?!&gt;) )? )
+			           			 |
+			           			# …or an operator method
+				           		(?: ===? | \(\) | &gt;[&gt;=]? | &lt;=&gt; | &lt;[&lt;=]? | [%&amp;`/\|] | \*\*? | =?~ | [-+]@? | \[\]=? )
+				           	)
+			           	)
+			         ) ?
+			         (?:\x{20}|(?:\\\n))*
+
+ 					 # the opening parenthesis for parameters
+			         ( \( )
+
+	        </string>
+
+			<key>end</key>
+			<string>(?x)
+				# Params ending parentheses
+				( \) )
+
+				# Possible return type
+				(
+					(?:\x{20}|(?:\\ \n))*
+					[:'`.]?
+					(?:\x{20}|(?:\\ \n))*
+					# *TODO* also grouping and pipe
+					(?:
+						!
+						|
+						(?:
+							[A-Z][\x{80}-\x{10FFFF}\w&lt;&gt;\[\]]*
+						)
+					)
+				) ?
+
+			</string>
+
+			<key>patterns</key>
+			<array>
+
+				<dict>
+					<key>match</key>
+					<string>(?x)
+						# Type annotation?
+						(?:\x{20}|(?:\\\n)) * ?
+						(?:
+							['`:.~^]
+							  |
+							\s(?=[A-Z&lt;\[])
+						)
+						(?:\x{20}|(?:\\\n)) *
+
+						# Type manipulation modifier?
+						(?:
+							mut
+							(?= [\x{20}\),\\] )
+							(?:\x{20}|(?:\\\n))*
+						) ?
+
+						# Type name / declaration
+						(?:
+							[&lt;\]] ?
+							# Name
+							(?:
+								[A-Z][\[\]&lt;&lt;\w\x{80}-\x{10FFFF}]*
+							)
+							 |
+							# Sum Type
+							(?:
+								\(
+								(?:\x{20}|(?:\\\n))*
+								[*A-Z][\[\]&lt;&gt;\w\x{80}-\x{10FFFF}]+
+								(
+									(?:\x{20}|(?:\\\n))*
+									\|
+									(?:\x{20}|(?:\\\n))*
+									[*A-Z] [\[\]&lt;&gt;\w\x{80}-\x{10FFFF}]*
+								)*
+								(?:\x{20}|(?:\\\n))*
+								\)
+								(?:\x{20}|(?:\\\n))*
+							)
+							[&gt;\]] ?
+						) ?
+						# (?=[\),])
+					</string>
+					<key>name</key>
+					<string>support.function.other.type-param.onyx</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>(?x)
+						(?&lt;=[^(, ])
+						(?:\x{20}|(?:\\\n))*
+						[\w\x{80}-\x{10FFFF}]+
+					</string>
+					<key>name</key>
+					<string>variable.other.constant.onyx</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>(?x)
+						(?&lt;=[\(,])
+						(?:\x{20}|(?:\\\n))*
+						(@?)[-a-z\x{80}-\x{10FFFF}] [\w\x{80}-\x{10FFFF}] *
+					</string>
+					<key>name</key>
+					<string>variable.parameter.function.onyx</string>
+				</dict>
+
+				<!-- dict>
+					<key>match</key>
+					<string>[,`´.:=]</string>
+					<key>name</key>
+					<string>punctuation.separator.object.onyx</string>
+				</dict -->
+
+				<!-- <dict>
+					<key>include</key>
+					<string>$self</string>
+				</dict> -->
+			</array>
+
+			<key>beginCaptures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.control.def.onyx</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.function.onyx</string>
+					<!-- string>class.support.onyx</string -->
 				</dict>
 				<key>3</key>
 				<dict>
@@ -399,9 +920,55 @@
 
 
 
+
+
 		<dict>
 			<key>begin</key>
-			<string>([\{%~\[^&lt;\x{80}-\x{FFFF}]+\s)?"</string>
+			<string>\b(r|raw|t|c)(")</string>
+			<key>beginCaptures</key>
+			<dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.string.begin.onyx</string>
+				</dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.control.primary.onyx</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>double quoted string (allows for interpolation)</string>
+			<key>end</key>
+			<string>"</string>
+			<key>endCaptures</key>
+			<dict>
+				<key>0</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.string.end.onyx</string>
+				</dict>
+			</dict>
+			<key>name</key>
+			<string>string.quoted.double.onyx</string>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>include</key>
+					<string>#interpolated_onyx</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#escaped_char</string>
+				</dict>
+			</array>
+		</dict>
+
+
+		<dict>
+			<key>begin</key>
+			<string>"</string>
 			<key>beginCaptures</key>
 			<dict>
 				<key>0</key>
@@ -435,6 +1002,56 @@
 					<string>#escaped_char</string>
 				</dict>
 			</array>
+		</dict>
+
+
+
+
+
+
+
+
+
+		<dict>
+			<key>comment</key>
+			<string>Pragmas / Annotations</string>
+
+			<key>name</key>
+			<string>keyword.control.secondary.pragma.onyx</string>
+
+			<key>match</key>
+			<string>(?x)
+				(?:^|\s)
+				(?:
+					# (?: (\#)([a-z][-_\w\x{2013}]+(?:\s?[:=]\s?[-\w\x{2013}]+)?)\# ) |
+					# (?: (-\#)([a-z][-_\w\x{2013}]+(?:\s?[:=]\s?[-\w\x{2013}]+)?)+ )
+					(?: \\([A-Za-z][-_\w\x{2013}]+ (?: \s? [:=] \s? [-\w\x{2013}]+)? ) )
+				)
+			</string>
+		</dict>
+
+		<dict>
+			<key>comment</key>
+			<string>Important Pragmas / Annotations</string>
+
+			<key>name</key>
+			<string>keyword.control.primary.pragma.onyx</string>
+
+			<key>match</key>
+			<string>(?x)
+				(?:^|\s)
+				(?:
+					(?: \\!([A-Za-z][-_\w\x{2013}]+ (?: \s? [:=] \s? [-\w\x{2013}]+)? ) )
+				)
+			</string>
+		</dict>
+
+		<!-- Tag / Symbol Constant -->
+		<dict>
+			<key>match</key>
+			<string>(?: (\#) [-\w_\x{80}-\x{10FFFF}]+ ) | (?: (\#)" (?: [^"]|(?:\\") )+ " ) </string>
+			<key>name</key>
+			<string>constant.language.onyx</string>
 		</dict>
 
 
@@ -510,27 +1127,54 @@
 				\s*
 				(abstract )?
 				\s*
-				(class|struct|type  |  actor)
+				(class|struct|enum|type|trait|mixin  |  actor)
 				\s+
 				(
 					(
-						[.A-Z_:\x{80}-\x{10FFFF}][.\w:\x{80}-\x{10FFFF}]*
-						([\(\[]([,\s.a-zA-Z0-9_:\x{80}-\x{10FFFF}]+)[\)\]])?
+						# deffed type/class name
+						[.A-Z_:\x{80}-\x{10FFFF}][-.\w:\x{80}-\x{10FFFF}]*
+						([\(&lt;\[]([,\s.a-zA-Z0-9_:\x{80}-\x{10FFFF}]+)[\)&gt;\]])?
+
+						# inheritance
 						(
-							\s*(&lt;)\s*
-							[.:A-Z\x{80}-\x{10FFFF}][.:\w\x{80}-\x{10FFFF}]*
-							([\(\[]([.a-zA-Z0-9_:]+\s,)[\)\]])?
+							# inherit "arrow"
+							\s*&lt;{1,2}\s*
+
+							# inherited type
+							[.:A-Z\x{80}-\x{10FFFF}][-.:\w\x{80}-\x{10FFFF}]*
+							(?:
+								[(&lt;\[] (?: [.a-zA-Z0-9_:-]+ ) [)&gt;\]]
+							)?
 						)?
-					)|(
-						(&lt;&lt;)
-						\s*
-						[.A-Z0-9_:\x{80}-\x{10FFFF}]+
+
 					)
+					#|(
+					#	(?:&lt;(?:&lt;)?)
+					#	\s*
+					#	[.A-Z0-9_:\x{80}-\x{10FFFF}]+
+					#)
 				)
 			</string>
 		</dict>
 
 		<dict>
+			<key>name</key>
+			<string>meta.module.onyx</string>
+
+			<key>match</key>
+			<string>(?x)
+				^
+				\s*
+				(module|mixin)
+				\s+
+				(
+					([A-Z\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*(::))?
+					([A-Z\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*(::))?
+					([A-Z\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*(::))*
+					[A-Z\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*
+				)
+			</string>
+
 			<key>captures</key>
 			<dict>
 				<key>1</key>
@@ -574,13 +1218,29 @@
 					<string>punctuation.separator.inheritance.onyx</string>
 				</dict>
 			</dict>
-			<key>match</key>
-			<string>^\s*(module|mixin)\s+(([A-Z\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*(::))?([A-Z\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*(::))?([A-Z\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*(::))*[A-Z\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*)</string>
-			<key>name</key>
-			<string>meta.module.onyx</string>
+
 		</dict>
 
+
+
 		<dict>
+			<key>name</key>
+			<string>meta.lib.onyx</string>
+
+			<key>match</key>
+			<string>(?x)
+				^
+				\s*
+				(lib|api)
+				\s+
+				(
+					([A-Z]\w*(::))?
+					([A-Z]\w*(::))?
+					([A-Z]\w*(::))*
+					[A-Z]\w*
+				)
+			</string>
+
 			<key>captures</key>
 			<dict>
 				<key>1</key>
@@ -624,127 +1284,30 @@
 					<string>punctuation.separator.inheritance.onyx</string>
 				</dict>
 			</dict>
-			<key>match</key>
-			<string>^\s*(lib)\s+(([A-Z]\w*(::))?([A-Z]\w*(::))?([A-Z]\w*(::))*[A-Z]\w*)</string>
-			<key>name</key>
-			<string>meta.lib.onyx</string>
+
 		</dict>
+
+
 
 		<dict>
 			<key>comment</key>
 			<string>else if is a common mistake carried over from other languages. it works if you put in a second end, but it’s never what you want.</string>
 			<key>match</key>
-			<string>(?&lt;![.\x{80}-\x{10FFFF}\w])else(\s)+if\b</string>
+			<string>(?&lt;![-.\x{80}-\x{10FFFF}\w])else(\s)+if\b</string>
 			<key>name</key>
 			<string>invalid.deprecated.onyx</string>
 		</dict>
 
 
-
-
-
-			<!--
-
-		WTF WHAT THE FUCK FUCK!!!???
-
-
-		<dict>
-			<key>comment</key>
-			<string>Case with same indent bare conditions</string>
-
-			<key>name</key>
-			<string>meta.function.method.with-arguments.onyx</string>
-
-			<key>contentName</key>
-			<string>xxx.variable.parameter.function.onyx</string>
-
-			<key>match</key>
-			<string>(\s*)(case)((\s+|\#)[^\n]*)?\n(?=\1[^\s])</string>
-
-			<key>beginCaptures</key>
-			<dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>keyword.control.primary.onyx</string>
-				</dict>
-				<key>4</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.parameters.onyx</string>
-				</dict>
-			</dict>
-
-
-
-
-			<key>end</key>
-			<string>(\s*)(end)</string>
-
-			<key>endCaptures</key>
-			<dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>keyword.control.end.onyx</string>
-				</dict>
-			</dict>
-
-			<key>patterns</key>
-			<array>
-			</array>
-
-
-
-		</dict>
-
-			-->
-
-
-
-		<dict>
-			<key>comment</key>
-			<string>Pragmas / Tags</string>
-
-
-			<key>match</key>
-			<string>(?:^|\s)(#)([a-z][-_\w\x{2013}]*(?:\s?[:=]\s?[-\w\x{2013}]+)?)(#)</string>
-
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>keyword.control.secondary.delimiter.onyx</string>
-				</dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>keyword.control.secondary.pragma.onyx</string>
-				</dict>
-				<key>3</key>
-				<dict>
-					<key>name</key>
-					<string>keyword.control.secondary.delimiter.onyx</string>
-				</dict>
-			</dict>
-
-		</dict>
-
-		<dict>
-			<key>comment</key>
-			<string>Symbols / SetTags</string>
-			<key>match</key>
-			<string>(?&lt;![.\x{80}-\x{10FFFF}\w])#(?:(?:[A-Z][_\w\x{2013}]*)|(?:"[^"]+"))</string>
-			<key>name</key>
-			<string>variable.other.constant.onyx</string>
-		</dict>
-
 		<dict>
 			<key>comment</key>
 			<string>everything being a reserved word, not a value and needing a 'end' is a..</string>
 			<key>match</key>
-			<string>(?&lt;![.\x{80}-\x{10FFFF}\w])(BEGIN|alias|await|begin|case|abstract|class|distinct|friend|END|ensure|fun|if|ifdef|lib|module|mixin|out|rescue|with|union|enum|template|macro|then|type|unless|where)(?![.\x{80}-\x{10FFFF}\w?!])</string>
+			<string>(?x)
+				(?&lt;![-.\x{80}-\x{10FFFF}\w])
+				(BEGIN|alias|await|begin|try|case|match|branch|cond|abstract|class|distinct|friend|END|ensure|fulfil|iff|if|ifdef|lib|module|mixin|out|rescue|with|union|enum|template|macro|then|do|begins|type__remove_ke|unless|where|fun)
+				(?![.\x{80}-\x{10FFFF}\w?!-])
+			</string>
 			<key>name</key>
 			<string>keyword.control.primary.onyx</string>
 		</dict>
@@ -753,7 +1316,7 @@
 			<key>comment</key>
 			<string>everything being a reserved word, not a value and needing a 'end' is a..</string>
 			<key>match</key>
-			<string>(?&lt;![.\x{80}-\x{10FFFF}\w])(else|elsif|elif|in|as||of|repeat|each|for|until|while)(?![.\x{80}-\x{10FFFF}\w?!])</string>
+			<string>(?&lt;![-.\x{80}-\x{10FFFF}\w])(else|elsif|elif|in|as|is|of|repeat|each|for|until|while)(?![.\x{80}-\x{10FFFF}\w?!-])</string>
 			<key>name</key>
 			<string>keyword.control.secondary.onyx</string>
 		</dict>
@@ -762,7 +1325,7 @@
 			<key>comment</key>
 			<string>everything being a reserved word, not a value and needing a 'end' is a..</string>
 			<key>match</key>
-			<string>(?&lt;![.\x{80}-\x{10FFFF}\w])(when)(?![.\x{80}-\x{10FFFF}\w?!])</string>
+			<string>(?&lt;![-.\x{80}-\x{10FFFF}\w])(when)(?![.\x{80}-\x{10FFFF}\w?!-])</string>
 			<key>name</key>
 			<string>keyword.control.secondary.when.onyx</string>
 		</dict>
@@ -771,16 +1334,23 @@
 			<key>comment</key>
 			<string>Give the end keyword an additional scope</string>
 			<key>match</key>
-			<string>(?&lt;![.\x{80}-\x{10FFFF}\w])(endif|endcase|endwhile|endclass|endtype|end–fn|end–if|end–type|end–case|end–while|end–repeat|end-each|end)(?![.\x{80}-\x{10FFFF}\w?!])</string>
+			<string>(?x)
+				(?&lt;![-.\x{80}-\x{10FFFF}\w])
+				end[-_–]?(
+					if|unless|case|trait|class|type|struct|try|module|scope|
+					def|fn|fun|own|Self|params|formal|
+					loop|repeat|while|until|for|each
+				)?
+				(?![.\x{80}-\x{10FFFF}\w?!-])</string>
 			<key>name</key>
 			<string>keyword.control.secondary.end.onyx</string>
 		</dict>
 
-		<dict>
+<!-- 		<dict>
 			<key>comment</key>
 			<string>contextual smart pair support for block parameters</string>
 			<key>match</key>
-			<string>(?&lt;![.\x{80}-\x{10FFFF}\w])do(?![.\x{80}-\x{10FFFF}\w?!])\s*</string>
+			<string>(?&lt;![-.\x{80}-\x{10FFFF}\w])do(?![.\x{80}-\x{10FFFF}\w?!-])\s*</string>
 			<key>name</key>
 			<string>keyword.control.start-block.onyx</string>
 		</dict>
@@ -793,12 +1363,12 @@
 			<key>name</key>
 			<string>meta.syntax.onyx.start-block</string>
 		</dict>
-
+ -->
 		<dict>
 			<key>comment</key>
 			<string> as above, just doesn't need a 'end' and does a logic operation</string>
 			<key>match</key>
-			<string>(?&lt;![.\x{80}-\x{10FFFF}\w])(and|not|or)(?![.\x{80}-\x{10FFFF}\w?!])</string>
+			<string>(?&lt;![-.\x{80}-\x{10FFFF}\w])(and|not|or)(?![.\x{80}-\x{10FFFF}\w?!-])</string>
 			<key>name</key>
 			<string>keyword.operator.logical.onyx</string>
 		</dict>
@@ -807,14 +1377,14 @@
 			<key>comment</key>
 			<string> just as above but being not a logical operation</string>
 			<key>match</key>
-			<string>(?&lt;![.\x{80}-\x{10FFFF}\w])(alias|alias_method|break|next|pointerof|typeof|sizeof|instance_sizeof|zredo|retry|return|super|undef|yield)(?![.\x{80}-\x{10FFFF}\w?!])|\bdefined\?|\bblock_given\?</string>
+			<string>(?&lt;![-.\x{80}-\x{10FFFF}\w])(alias|alias_method|break|next|pointerof|typeof|sizeof|instance_sizeof|zredo|retry|~&gt;|~~&gt;|:|=&gt;|return|breaking|nop|super|undef|yield)(?![.\x{80}-\x{10FFFF}\w?!-])|\bdefined\?|\bblock_given\?</string>
 			<key>name</key>
 			<string>keyword.control.pseudo-method.onyx</string>
 		</dict>
 
 		<dict>
 			<key>match</key>
-			<string>\b(nil|true|false)(?![.\x{80}-\x{10FFFF}\w?!])</string>
+			<string>\b(nil|true|false)(?![.\x{80}-\x{10FFFF}\w?!-])</string>
 			<key>name</key>
 			<string>constant.language.onyx</string>
 		</dict>
@@ -822,7 +1392,7 @@
 		<dict>
 			<key>match</key>
 			<string>(?x)
-				(?&lt;! [-\x{80}-\x{10FFFF}\w.?!] )
+				(?&lt;!- [-\x{80}-\x{10FFFF}\w.?!] )
 				(__(FILE|LINE)__ | self | this)
 				(?![-\x{80}-\x{10FFFF}\w.?!])
 			</string>
@@ -834,7 +1404,7 @@
 			<key>comment</key>
 			<string> everything being a method but having a special function is a..</string>
 			<key>match</key>
-			<string>(?&lt;![.\x{80}-\x{10FFFF}\w])(initialize|new|loop|include|extend|raise|getter|setter|property|private|protected|describe|it|with|delegate|def_hash|def_equals|def_equals_and_hash|forward_missing_to|record|assert_responds_to)(?![.\x{80}-\x{10FFFF}\w?!])[!?]?</string>
+			<string>(?&lt;![-.\x{80}-\x{10FFFF}\w])(initialize|new|loop|include|extend|raise|getter|setter|property|private|protected|internal|override|redef|describe|it|with|delegate|def_hash|def_equals|def_equals_and_hash|forward_missing_to|record|assert_responds_to)(?![.\x{80}-\x{10FFFF}\w?!-])[!?]?</string>
 			<key>name</key>
 			<string>keyword.other.special-method.onyx</string>
 		</dict>
@@ -887,15 +1457,15 @@
 			<key>match</key>
 			<string>(?x)
 				(
-					['`:.]\s*
-					(?:(?:\[\])?[A-Z][\[\]\w\x{80}-\x{10FFFF}]*)|(?:\[\])
+					['`:.~^]\s*
+					(?:[&lt;\[]?[*A-Z][\[\]&lt;&gt;\w\x{80}-\x{10FFFF}]*)|(?:&lt;&gt;)
 				)|(
-					['`:.]\s*
+					['`:.~^]\s*
 					\(\s*
-					(?:(?:\[\])?[A-Z][\[\]\w\x{80}-\x{10FFFF}]*)|(?:\[\])
+					(?:[&lt;\[]?[*A-Z][\[\]&lt;&gt;\w\x{80}-\x{10FFFF}]*)|(?:&lt;&gt;)
 					(
 						\s*\|\s*
-						(?:(?:\[\])?[A-Z][\[\]\w\x{80}-\x{10FFFF}]*)|(?:\[\])
+						(?:[&lt;\[]?[*A-Z][\[\]&lt;&gt;\w\x{80}-\x{10FFFF}]*)|(?:&lt;&gt;)
 					)*
 					\s*\)
 				)
@@ -952,7 +1522,7 @@
 				</dict>
 			</dict>
 			<key>match</key>
-			<string>(\$)(!|@|&amp;|`|'|\+|\d+|~|=|/|\\|,|;|\.|&lt;|&gt;|_|\*|\$|\?|:|"|-[0adFiIlpv])</string>
+			<string>(\$)(!|@|&amp;|`|'|\+|\d+|~|^|=|/|\\|,|;|\.|&lt;|&gt;|_|\*|\$|\?|:|"|-[0adFiIlpv])</string>
 			<key>name</key>
 			<string>variable.other.readwrite.global.pre-defined.onyx</string>
 		</dict>
@@ -984,37 +1554,29 @@
 
 		<dict>
 			<key>match</key>
-			<string>(?&lt;![\x{80}-\x{10FFFF}\w])[A-Z\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*</string>
+			<string>(?&lt;![-\x{80}-\x{10FFFF}\w])[A-Z\x{80}-\x{10FFFF}][-\w\x{80}-\x{10FFFF}]*</string>
 			<key>name</key>
 			<string>support.class.onyx</string>
 		</dict>
 
 		<dict>
 			<key>match</key>
-			<string>(?&lt;![\x{80}-\x{10FFFF}\w])[A-Z\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*\b</string>
+			<string>(?&lt;![-\x{80}-\x{10FFFF}\w])[A-Z\x{80}-\x{10FFFF}][-\w\x{80}-\x{10FFFF}]*\b</string>
 			<key>name</key>
 			<string>variable.other.constant.onyx</string>
 		</dict>
 
 
-
-
-
-
-
-
-
-
 		<dict>
 			<key>match</key>
-			<string>(?&lt;![\w\x{80}-\x{10FFFF}])(0[xX]\h(?&gt;_?\h)*|\d(?&gt;_?\d)*(\.(?![^[:space:][:digit:]])(?&gt;_?\d)*)?([eE][-+]?\d(?&gt;_?\d)*)?|0[bB][01]+)(_?(u8|u16|u32|u64|i8|i16|i32|i64|f32|f64))?\b</string>
+			<string>(?&lt;![-\w\x{80}-\x{10FFFF}])(0[xX]\h(?&gt;_?\h)*|\d(?&gt;_?\d)*(\.(?![^[:space:][:digit:]])(?&gt;_?\d)*)?([eE][-+]?\d(?&gt;_?\d)*)?|0[bB][01]+)(_?(u8|u16|u32|u64|i8|i16|i32|i64|f32|f64))?\b</string>
 			<key>name</key>
 			<string>constant.numeric.onyx</string>
 		</dict>
 
 		<dict>
 			<key>begin</key>
-			<string>:'</string>
+			<string>#'</string>
 			<key>captures</key>
 			<dict>
 				<key>0</key>
@@ -1040,7 +1602,7 @@
 
 		<dict>
 			<key>begin</key>
-			<string>:"</string>
+			<string>#"</string>
 			<key>captures</key>
 			<dict>
 				<key>0</key>
@@ -2012,7 +2574,7 @@
 			</array>
 		</dict>
 
-		<dict>
+<!-- 		<dict>
 			<key>captures</key>
 			<dict>
 				<key>1</key>
@@ -2024,12 +2586,12 @@
 			<key>comment</key>
 			<string>symbols</string>
 			<key>match</key>
-			<string>(?&lt;!:)(:)(?&gt;[a-zA-Z_\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*(?&gt;[?!%]|=(?![&gt;=]))?|===?|&gt;[&gt;=]?|&lt;[&lt;=]?|&lt;=&gt;|[%&amp;`/\|]|\*\*?|=?~|[-+]@?|\[\]=?|@@?[a-zA-Z_\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*)</string>
+			<string>(?&lt;!-:)(#)(?&gt;[a-zA-Z_\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*(?&gt;[?!%]|=(?![&gt;=]))?|===?|&gt;[&gt;=]?|&lt;[&lt;=]?|&lt;=&gt;|[%&amp;`/\|]|\*\*?|=?~|[-+]@?|&lt;&gt;=?|@@?[a-zA-Z_\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*)</string>
 			<key>name</key>
 			<string>constant.other.symbol.onyx</string>
 		</dict>
-
-		<dict>
+ -->
+<!-- 		<dict>
 			<key>captures</key>
 			<dict>
 				<key>1</key>
@@ -2045,96 +2607,7 @@
 			<key>name</key>
 			<string>constant.other.symbol.onyx.19syntax</string>
 		</dict>
-
-		<dict>
-			<key>begin</key>
-			<string>^=begin</string>
-			<key>captures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.comment.onyx</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>multiline comments</string>
-			<key>end</key>
-			<string>^=end</string>
-			<key>name</key>
-			<string>comment.block.documentation.onyx</string>
-		</dict>
-
-		<dict>
-			<key>name</key>
-			<string>comment.line.parse-directive.onyx</string>
-			<key>match</key>
-			<string>(?x)
-				(?:
-					^[ \t]+
-				)?
-				(
-					--!\s
-				)
-				(
-					.*$
-				)
-				\n?</string>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.comment.onyx</string>
-				</dict>
-			</dict>
-		</dict>
-
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.comment.onyx</string>
-				</dict>
-			</dict>
-			<key>match</key>
-			<string>(?:^[ \t]+)?(--\|\s).*$\n?</string>
-			<key>name</key>
-			<string>comment.line.doc.onyx</string>
-		</dict>
-
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.comment.onyx</string>
-				</dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>invalid.illegal.TODO.onyx</string>
-				</dict>
-			</dict>
-			<key>match</key>
-			<string>(?x)
-				(
-					--
-					(?:
-						\s+.*(TODO|todo)?.*$
-					)
-					|
-					(?:
-						$
-					)
-				)</string>
-			<key>name</key>
-			<string>comment.line.onyx</string>
-		</dict>
-
+ -->
 		<dict>
 			<key>begin</key>
 			<string>^__END__\n</string>
@@ -2722,8 +3195,18 @@
 			</array>
 		</dict>
 
+		<dict>
+			<key>name</key>
+			<string>keyword.operator.comparison.onyx</string>
 
+			<key>match</key>
+			<string>(?x)
+				(&lt;=&gt;|&lt;(?!&lt;|=)|&gt;(?!&lt;|=|&gt;)|&lt;=|&gt;=|===|==|=~|!=|!~|(?&lt;=[ \t])\?)
+				|
+				( (?: not|and|or|isnt|is ) (?=[\s\n]) )
+			</string>
 
+		</dict>
 
 		<dict>
 			<key>comment</key>
@@ -2745,9 +3228,6 @@
 		</dict>
 
 
-
-
-
 		<dict>
 			<key>match</key>
 			<string>=&gt;</string>
@@ -2764,21 +3244,14 @@
 
 		<dict>
 			<key>match</key>
-			<string>&lt;=&gt;|&lt;(?!&lt;|=)|&gt;(?!&lt;|=|&gt;)|&lt;=|&gt;=|===|==|=~|!=|!~|(?&lt;=[ \t])\?</string>
-			<key>name</key>
-			<string>keyword.operator.comparison.onyx</string>
-		</dict>
-
-		<dict>
-			<key>match</key>
 			<string>(?x)
 				(?&lt;=[ \t])
 				!+
-				| (?&lt;![\w\x{80}-\x{10FFFF}]) not (?![.\x{80}-\x{10FFFF}\w?!])
+				| (?&lt;![-\w\x{80}-\x{10FFFF}]) not (?![.\x{80}-\x{10FFFF}\w?!-])
 				| &amp;&amp;
-				| (?&lt;![\w\x{80}-\x{10FFFF}]) and (?![.\x{80}-\x{10FFFF}\w?!])
+				| (?&lt;![-\w\x{80}-\x{10FFFF}]) and (?![.\x{80}-\x{10FFFF}\w?!-])
 				| \|\|
-				| (?&lt;![\w\x{80}-\x{10FFFF}]) or (?![.\x{80}-\x{10FFFF}\w?!])
+				| (?&lt;![-\w\x{80}-\x{10FFFF}]) or (?![.\x{80}-\x{10FFFF}\w?!-])
 				| \^
 			</string>
 			<key>name</key>
@@ -2896,7 +3369,7 @@
 		<dict>
 			<key>patterns</key>
 			<array>
-				<dict>
+<!-- 				<dict>
 					<key>captures</key>
 					<dict>
 						<key>0</key>
@@ -2911,13 +3384,14 @@
 						</dict>
 					</dict>
 					<key>match</key>
-					<string>--\{(\})</string>
+					<string>\{\{(\}\})</string>
 					<key>name</key>
 					<string>source.onyx.embedded.source</string>
 				</dict>
+ -->
 				<dict>
 					<key>begin</key>
-					<string>--\{</string>
+					<string>\{\{</string>
 					<key>captures</key>
 					<dict>
 						<key>0</key>
@@ -2927,7 +3401,7 @@
 						</dict>
 					</dict>
 					<key>end</key>
-					<string>\}</string>
+					<string>\}\}</string>
 					<key>name</key>
 					<string>source.onyx.embedded.source</string>
 					<key>patterns</key>
@@ -2942,7 +3416,7 @@
 						</dict>
 					</array>
 				</dict>
-				<dict>
+<!-- 				<dict>
 					<key>captures</key>
 					<dict>
 						<key>1</key>
@@ -2984,7 +3458,8 @@
 					<key>name</key>
 					<string>variable.other.readwrite.global.onyx</string>
 				</dict>
-			</array>
+ -->
+ 			</array>
 		</dict>
 
 		<key>nest_brackets</key>
@@ -3432,12 +3907,13 @@
 					<key>comment</key>
 					<string>We are restrictive in what we allow to go after the comment character to avoid false positives, since the availability of comments depend on regexp flags.</string>
 					<key>match</key>
-					<string>(?&lt;=^|\s)-- [[a-zA-Z0-9,. \t?!-][^\x{00}-\x{7F}]]*$</string>
+					<string>(?&lt;=^|\s)--[[a-zA-Z0-9,. \t?!-][^\x{00}-\x{7F}]]*$</string>
 					<key>name</key>
-					<string>comment.line.number-sign.onyx</string>
+					<string>comment.line.dashdash.onyx</string>
 				</dict>
 			</array>
 		</dict>
+
 
 	</dict>
 </dict>

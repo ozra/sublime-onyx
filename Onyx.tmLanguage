@@ -207,6 +207,9 @@
 		         		def (?:\x{20}|(?:\\ \n)) |
 		         		fn (?:\x{20}|(?:\\ \n)) |
 		         		fx (?:\x{20}|(?:\\ \n)) |
+		         		fu (?:\x{20}|(?:\\ \n)) |
+		         		fi (?:\x{20}|(?:\\ \n)) |
+		         		mf (?:\x{20}|(?:\\ \n)) |
 		         		\\ |
 
 
@@ -235,6 +238,9 @@
 				           	)
 			           	)
 			         ) ?
+
+			         ( \*\*|\* )?  # visibility asterisks
+
 			         (?:\x{20}|(?:\\\n))*
 
  					 # the opening parenthesis for parameters
@@ -379,6 +385,11 @@
 					<string>entity.name.function.onyx</string>
 				</dict>
 				<key>4</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.control.primary.onyx</string>
+				</dict>
+				<key>5</key>
 				<dict>
 					<key>name</key>
 					<string>punctuation.definition.parameters.onyx, keyword.control.secondary</string>
@@ -638,6 +649,9 @@
 			         (
 		         		fx (?:\x{20}|(?:\\ \n)) |
 		         		fn (?:\x{20}|(?:\\ \n)) |
+		         		fu (?:\x{20}|(?:\\ \n)) |
+		         		fi (?:\x{20}|(?:\\ \n)) |
+		         		mf (?:\x{20}|(?:\\ \n)) |
 		         		pr (?:\x{20}|(?:\\ \n)) |
 		         		my (?:\x{20}|(?:\\ \n)) |
 		         		ex (?:\x{20}|(?:\\ \n)) |
@@ -649,6 +663,7 @@
 
 		         		proc (?:\x{20}|(?:\\ \n)) |
 		         		cfun (?:\x{20}|(?:\\ \n)) |
+		         		export (?:\x{20}|(?:\\ \n)) |
 		         		func (?:\x{20}|(?:\\ \n)) |
 		         		meth (?:\x{20}|(?:\\ \n)) |
 
@@ -679,6 +694,9 @@
 				           	)
 			           	)
 			         ) ?
+
+			         ( \*\*|\* )?  # visibility asterisks
+
 			         (?:\x{20}|(?:\\\n))*
 
  					 # the opening parenthesis for parameters
@@ -815,6 +833,11 @@
 				<key>4</key>
 				<dict>
 					<key>name</key>
+					<string>keyword.control.primary.onyx</string>
+				</dict>
+				<key>5</key>
+				<dict>
+					<key>name</key>
 					<string>punctuation.definition.parameters.onyx, keyword.control.secondary</string>
 				</dict>
 			</dict>
@@ -921,6 +944,124 @@
 
 
 
+		<dict>
+			<key>comment</key><string>Type Declaration / Definition</string>
+			<key>name</key><string>meta.class.onyx</string>
+			<key>captures</key>
+			<dict>
+				<key>1</key><dict>
+					<key>name</key>
+					<string>keyword.control.class.onyx</string>
+				</dict>
+				<key>2</key><dict>
+					<key>name</key>
+					<string>entity.name.type.class.onyx</string>
+				</dict>
+				<key>3</key><dict>
+					<key>name</key>
+					<string>entity.name.type.class.onyx</string>
+				</dict>
+
+				<key>4</key><dict>
+					<key>name</key>
+					<string>punctuation.separator.onyx</string>
+				</dict>
+				<key>5</key><dict>
+					<key>name</key>
+					<string>keyword.control.primary.onyx</string>
+				</dict>
+				<key>6</key><dict>
+					<key>name</key>
+					<string>entity.name.type.class.super.onyx</string>
+				</dict>
+
+				<key>7</key><dict>
+					<key>name</key>
+					<string>punctuation.separator.onyx</string>
+				</dict>
+				<key>8</key><dict>
+					<key>name</key>
+					<string>keyword.control.primary.onyx</string>
+				</dict>
+				<key>9</key><dict>
+					<key>name</key>
+					<string>entity.name.type.class.super.onyx</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>(?x)
+				^
+				\s*
+				( type|trait | enum|union|struct )
+				\s+
+				(?:
+					# deffed type/class name
+					([.A-Z_\x{80}-\x{10FFFF}][-.\w\x{80}-\x{10FFFF}]*)
+					( [\(&lt;\[](?: [,\s.a-zA-Z0-9_\x{80}-\x{10FFFF}]+ )[\)&gt;\]] )?
+					\s*
+
+					# inheritance
+					(?:
+						(?:
+							# inherit "arrow"
+							( &lt;{1,2} )
+							\s*
+
+							(
+								# modifier
+								(?: abstract)?
+								\s*
+
+								# type builder name
+								(?: enum|object|value | actor )?
+								\s*
+							)?
+
+							# inherited type
+							(
+								[.A-Z\x{80}-\x{10FFFF}][-.\w\x{80}-\x{10FFFF}]*
+								(?:
+									[(&lt;\[] (?: [,.a-zA-Z0-9_-]+ ) [)&gt;\]]
+								)?
+							)?
+						)
+					|
+						(?:
+							# alias eq
+							( = )
+							\s*
+
+							(
+								# type builder name
+								(?: sum|alias| uniq|unique )?
+								\s*
+							)?
+
+							# aliased type
+							(
+								(?:
+									[.A-Z\x{80}-\x{10FFFF}][-.\w\x{80}-\x{10FFFF}]*
+									(?:
+										[(&lt;\[] (?: [,.a-zA-Z0-9_-]+ ) [)&gt;\]]
+									)?
+									\s*\|\s*
+								)*
+								(?:
+									[.A-Z\x{80}-\x{10FFFF}][-.\w\x{80}-\x{10FFFF}]*
+									(?:
+										[(&lt;\[] (?: [,.a-zA-Z0-9_-]+ ) [)&gt;\]]
+									)?
+								)?
+							)
+						)
+					)?
+				)
+
+			</string>
+		</dict>
+
+
+
 
 		<dict>
 			<key>begin</key>
@@ -1011,10 +1152,29 @@
 
 
 
+		<dict>
+			<key>comment</key>
+			<string>Pragmas/Directives Initial Operator Per Line Style</string>
+
+			<key>name</key>
+			<string>keyword.control.secondary.pragma.onyx</string>
+
+			<key>match</key>
+			<string>(?x)
+				(?: ^ | \s | (?: ^\s*type\s.*? ) )
+				(?:
+					(?:
+						[|\\#] \s
+						(?: \s* [A-Za-z][-_\w\x{2013}]+ (?: \s? [:=] \s? [-\w\x{2013}]+)? ) +
+					)
+				)
+			</string>
+		</dict>
+
 
 		<dict>
 			<key>comment</key>
-			<string>Pragmas / Annotations</string>
+			<string>Pragmas / Directives / Annotations</string>
 
 			<key>name</key>
 			<string>keyword.control.secondary.pragma.onyx</string>
@@ -1025,14 +1185,14 @@
 				(?:
 					# (?: (\#)([a-z][-_\w\x{2013}]+(?:\s?[:=]\s?[-\w\x{2013}]+)?)\# ) |
 					# (?: (-\#)([a-z][-_\w\x{2013}]+(?:\s?[:=]\s?[-\w\x{2013}]+)?)+ )
-					(?: \\([A-Za-z][-_\w\x{2013}]+ (?: \s? [:=] \s? [-\w\x{2013}]+)? ) )
+					(?: (?: \| | \\ | ' )([a-z][-_\w\x{2013}]+ (?: \s? [:=] \s? [-\w\x{2013}]+)? ) )
 				)
 			</string>
 		</dict>
 
 		<dict>
 			<key>comment</key>
-			<string>Important Pragmas / Annotations</string>
+			<string>Important Pragmas / Directives / Annotations</string>
 
 			<key>name</key>
 			<string>keyword.control.primary.pragma.onyx</string>
@@ -1064,98 +1224,7 @@
 
 
 
-		<dict>
-			<key>name</key>
-			<string>meta.class.onyx</string>
 
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>keyword.control.class.onyx</string>
-				</dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>keyword.control.class.onyx</string>
-				</dict>
-				<key>3</key>
-				<dict>
-					<key>name</key>
-					<string>entity.name.type.class.onyx</string>
-				</dict>
-				<key>5</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.separator.onyx</string>
-				</dict>
-				<key>6</key>
-				<dict>
-					<key>name</key>
-					<string>support.class.other.type-param.onyx</string>
-				</dict>
-				<key>7</key>
-				<dict>
-					<key>name</key>
-					<string>entity.other.inherited-class.onyx</string>
-				</dict>
-				<key>8</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.separator.onyx</string>
-				</dict>
-				<key>9</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.separator.onyx</string>
-				</dict>
-				<key>10</key>
-				<dict>
-					<key>name</key>
-					<string>support.class.other.type-param.onyx</string>
-				</dict>
-				<key>11</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.variable.onyx</string>
-				</dict>
-			</dict>
-			<key>match</key>
-			<string>(?x)
-				^
-				\s*
-				(abstract )?
-				\s*
-				(class|struct|enum|type|trait|mixin  |  actor)
-				\s+
-				(
-					(
-						# deffed type/class name
-						[.A-Z_:\x{80}-\x{10FFFF}][-.\w:\x{80}-\x{10FFFF}]*
-						([\(&lt;\[]([,\s.a-zA-Z0-9_:\x{80}-\x{10FFFF}]+)[\)&gt;\]])?
-
-						# inheritance
-						(
-							# inherit "arrow"
-							\s*&lt;{1,2}\s*
-
-							# inherited type
-							[.:A-Z\x{80}-\x{10FFFF}][-.:\w\x{80}-\x{10FFFF}]*
-							(?:
-								[(&lt;\[] (?: [.a-zA-Z0-9_:-]+ ) [)&gt;\]]
-							)?
-						)?
-
-					)
-					#|(
-					#	(?:&lt;(?:&lt;)?)
-					#	\s*
-					#	[.A-Z0-9_:\x{80}-\x{10FFFF}]+
-					#)
-				)
-			</string>
-		</dict>
 
 		<dict>
 			<key>name</key>
@@ -1168,9 +1237,9 @@
 				(module|mixin)
 				\s+
 				(
-					([A-Z\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*(::))?
-					([A-Z\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*(::))?
-					([A-Z\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*(::))*
+					([A-Z\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*(\.))?
+					([A-Z\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*(\.))?
+					([A-Z\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*(\.))*
 					[A-Z\x{80}-\x{10FFFF}][\w\x{80}-\x{10FFFF}]*
 				)
 			</string>
@@ -1404,7 +1473,7 @@
 			<key>comment</key>
 			<string> everything being a method but having a special function is a..</string>
 			<key>match</key>
-			<string>(?&lt;![-.\x{80}-\x{10FFFF}\w])(initialize|new|loop|include|extend|raise|getter|setter|property|private|protected|internal|override|redef|describe|it|with|delegate|def_hash|def_equals|def_equals_and_hash|forward_missing_to|record|assert_responds_to)(?![.\x{80}-\x{10FFFF}\w?!-])[!?]?</string>
+			<string>(?&lt;![-.\x{80}-\x{10FFFF}\w])(init|initialize|raw|new|loop|include|extend|raise|getter|setter|property|private|protected|internal|override|redef|describe|it|with|delegate|def_hash|def_equals|def_equals_and_hash|forward_missing_to|record|assert_responds_to)(?![.\x{80}-\x{10FFFF}\w?!-])[!?]?</string>
 			<key>name</key>
 			<string>keyword.other.special-method.onyx</string>
 		</dict>
@@ -3391,7 +3460,7 @@
  -->
 				<dict>
 					<key>begin</key>
-					<string>\{\{</string>
+					<string>\{</string>
 					<key>captures</key>
 					<dict>
 						<key>0</key>
@@ -3401,7 +3470,7 @@
 						</dict>
 					</dict>
 					<key>end</key>
-					<string>\}\}</string>
+					<string>\}</string>
 					<key>name</key>
 					<string>source.onyx.embedded.source</string>
 					<key>patterns</key>

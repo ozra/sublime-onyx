@@ -7,7 +7,7 @@
     <key>settings</key>
     <dict>
         <key>cancelCompletion</key>
-        <string>^\s*(else|end|do|begin|rescue|(class|def|module|include)\s*[a-zA-Z_0-9]+)$</string>
+        <string>^\s*(else|end|do|begin|rescue|(class|def|module|include)$</string>
     </dict>
 </dict>
 </plist>

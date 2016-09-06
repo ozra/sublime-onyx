@@ -36,26 +36,6 @@
 
 	<key>patterns</key>
 	<array>
-
-		<dict>
-			<key>begin</key>
-			<string>^=begin</string>
-			<key>captures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.comment.onyx</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>multiline comments</string>
-			<key>end</key>
-			<string>^=end</string>
-			<key>name</key>
-			<string>comment.block.documentation.onyx</string>
-		</dict>
-
 		<dict>
 			<key>name</key>
 			<string>comment.line.parse-directive.onyx</string>
@@ -82,48 +62,49 @@
 		</dict>
 
 		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.comment.onyx</string>
-				</dict>
-			</dict>
-			<key>match</key>
-			<string>(?:^[ \t]+)?((?:(?:--)|\x{2014})\|\s).*$\n?</string>
 			<key>name</key>
 			<string>comment.line.doc.onyx</string>
-		</dict>
-
-		<dict>
 			<key>captures</key>
 			<dict>
 				<key>1</key>
 				<dict>
 					<key>name</key>
 					<string>punctuation.definition.comment.onyx</string>
-				</dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>invalid.illegal.TODO.onyx</string>
 				</dict>
 			</dict>
 			<key>match</key>
 			<string>(?x)
-				((?:\s|^)
-					(?:(?:--)|\x{2014})
+				(?: [ \t]+ )
+				(
 					(?:
-						.*(TODO|todo)?.*$
+						(?:--)|
+						\x{2014}
 					)
-					|
-					(?:
-						$
-					)
-				)</string>
+					\|\s
+				)
+				.*$\n?
+			</string>
+		</dict>
+
+		<dict>
 			<key>name</key>
 			<string>comment.line.onyx</string>
+			<key>begin</key>
+			<string>(?x)
+				(?: \s | ^ )
+				(?: -- | \x{2014})
+			</string>
+			<key>end</key>
+			<string>$</string>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>match</key>
+					<string>\b(?:TODO|todo|FIXME|fixme)\b</string>
+					<key>name</key>
+					<string>invalid.illegal.TODO.onyx</string>
+				</dict>
+			</array>
 		</dict>
 
 		<dict>
@@ -875,6 +856,8 @@
 		</dict>
 
 		<dict>
+			<key>comment</key>
+			<string>Char-literal</string>
 			<key>match</key>
 			<string>%"(\\)?."</string>
 			<key>name</key>
@@ -935,23 +918,23 @@
 
 
 		<dict>
+			<key>comment</key>
+			<string>double quoted string (allows for interpolation)</string>
 			<key>begin</key>
-			<string>\b(r|raw|t|c|%)(")</string>
+			<string>(?:%(r|raw|t|c))?(")</string>
 			<key>beginCaptures</key>
 			<dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.begin.onyx</string>
-				</dict>
 				<key>1</key>
 				<dict>
 					<key>name</key>
 					<string>keyword.control.primary.onyx</string>
 				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.string.begin.onyx, string.quoted.double.onyx</string>
+				</dict>
 			</dict>
-			<key>comment</key>
-			<string>double quoted string (allows for interpolation)</string>
 			<key>end</key>
 			<string>"</string>
 			<key>endCaptures</key>
@@ -959,11 +942,10 @@
 				<key>0</key>
 				<dict>
 					<key>name</key>
-					<string>punctuation.definition.string.end.onyx</string>
+					<string>punctuation.definition.string.end.onyx, string.quoted.double.onyx</string>
 				</dict>
 			</dict>
-			<key>name</key>
-			<string>string.quoted.double.onyx</string>
+
 			<key>patterns</key>
 			<array>
 				<dict>
@@ -974,74 +956,20 @@
 					<key>include</key>
 					<string>#escaped_char</string>
 				</dict>
-			</array>
-		</dict>
-
-
-		<dict>
-			<key>begin</key>
-			<string>"</string>
-			<key>beginCaptures</key>
-			<dict>
-				<key>0</key>
 				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.begin.onyx</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>double quoted string (allows for interpolation)</string>
-			<key>end</key>
-			<string>"</string>
-			<key>endCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.end.onyx</string>
-				</dict>
-			</dict>
-			<key>name</key>
-			<string>string.quoted.double.onyx</string>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>include</key>
-					<string>#interpolated_onyx</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#escaped_char</string>
+					<key>match</key>
+					<string>.</string>
+		 			<key>captures</key>
+					<dict>
+						<key>0</key>
+						<dict>
+							<key>name</key>
+							<string>string.quoted.double.onyx</string>
+						</dict>
+					</dict>
 				</dict>
 			</array>
 		</dict>
-
-
-
-
-
-
-
-
-		<dict>
-			<key>comment</key>
-			<string>Pragmas/Directives Initial Operator Per Line Style</string>
-
-			<key>name</key>
-			<string>keyword.control.secondary.pragma.onyx</string>
-
-			<key>match</key>
-			<string>(?x)
-				(?: ^ | \s | (?: ^\s*type\s.*? ) )
-				(?:
-					(?:
-						[|\\#] \s
-						(?: \s* [A-Za-z][-_\w\x{2013}]+ (?: \s? [:=] \s? [-\w\x{2013}]+)? ) +
-					)
-				)
-			</string>
-		</dict>
-
 
 		<dict>
 			<key>comment</key>
@@ -1053,29 +981,10 @@
 			<key>match</key>
 			<string>(?x)
 				(?:^|\s)
-				(?:
-					# (?: (\#)([a-z][-_\w\x{2013}]+(?:\s?[:=]\s?[-\w\x{2013}]+)?)\# ) |
-					# (?: (-\#)([a-z][-_\w\x{2013}]+(?:\s?[:=]\s?[-\w\x{2013}]+)?)+ )
-					(?: (?: \| | \\ | ' )([a-z][-_\w\x{2013}]+ (?: \s? [:=] \s? [-\w\x{2013}]+)? ) )
-				)
+				'!?([a-z][-_\w\x{2013}]+(?:[!?])? (?: \s? [:=] \s? [-\w\x{2013}]+)? )
 			</string>
 		</dict>
 
-		<dict>
-			<key>comment</key>
-			<string>Important Pragmas / Directives / Annotations</string>
-
-			<key>name</key>
-			<string>keyword.control.primary.pragma.onyx</string>
-
-			<key>match</key>
-			<string>(?x)
-				(?:^|\s)
-				(?:
-					(?: [\|'\\]!([A-Za-z][-_\w\x{2013}]+ (?: \s? [:=] \s? [-\w\x{2013}]+)? ) )
-				)
-			</string>
-		</dict>
 
 		<!-- Tag / Symbol Constant -->
 		<dict>
@@ -1305,7 +1214,7 @@
 			<key>comment</key>
 			<string>else if is a common mistake carried over from other languages. it works if you put in a second end, but it’s never what you want.</string>
 			<key>match</key>
-			<string>(?&lt;![-.\x{80}-\x{10FFFF}\w])else(\s)+if\b</string>
+			<string>(?&lt;! [-.\x{80}-\x{10FFFF}\w])else(\s)+if\b</string>
 			<key>name</key>
 			<string>invalid.deprecated.onyx</string>
 		</dict>
@@ -1316,7 +1225,7 @@
 			<string>everything being a reserved word, not a value and needing a 'end' is a..</string>
 			<key>match</key>
 			<string>(?x)
-				(?&lt;![-.\x{80}-\x{10FFFF}\w])
+				(?&lt;! [-.\x{80}-\x{10FFFF}\w])
 				(
 					BEGIN|alias|await|begin|try|match|branch|switch|
 					uniq|unique|distinct|friend|END|ensure|fulfil|
@@ -1337,7 +1246,14 @@
 			<key>comment</key>
 			<string>everything being a reserved word, not a value and needing a 'end' is a..</string>
 			<key>match</key>
-			<string>(?&lt;![-.\x{80}-\x{10FFFF}\w])(else|elsif|elif|in|as|is|of|repeat|each|for|until|while)(?![.\x{80}-\x{10FFFF}\w?!-])</string>
+			<string>(?x)
+				(?&lt;! [-.\x{80}-\x{10FFFF}\w])
+				(
+					else|elsif|elif|in|as\?|as|is|of\?|of|for|until|while |
+					repeat|each| likely|unlikely
+				)
+				(?![.\x{80}-\x{10FFFF}\w?!-])
+			</string>
 			<key>name</key>
 			<string>keyword.control.secondary.onyx</string>
 		</dict>
@@ -1346,26 +1262,24 @@
 			<key>comment</key>
 			<string>everything being a reserved word, not a value and needing a 'end' is a..</string>
 			<key>match</key>
-			<string>(?&lt;![-.\x{80}-\x{10FFFF}\w])(case|when)(?![.\x{80}-\x{10FFFF}\w?!-])</string>
+			<string>(?x)
+				(?&lt;! [-.\x{80}-\x{10FFFF}\w])
+				(case|when)
+				(?![.\x{80}-\x{10FFFF}\w?!-])
+			</string>
 			<key>name</key>
 			<string>keyword.control.secondary.when.onyx</string>
 		</dict>
 
 		<dict>
 			<key>comment</key>
-			<string>Give the end keyword an additional scope</string>
+			<string>"end"-keyword</string>
 			<key>match</key>
 			<string>(?x)
-				(?&lt;! [-.\x{80}-\x{10FFFF}\w] )
-
+				(?&lt;! [-.\x{80}-\x{10FFFF}\w])
 				end
-				([-_– ](?:
-					if|unless|case|trait|class|type|struct|try|module|scope|
-					def|fn|fun|own|Self|params|formal|
-					loop|repeat|while|until|for|each
-				))?
-				(\s+[A-Za-z0-9_–-]+)?
-				(?![.\x{80}-\x{10FFFF}\w?!-])
+				(?: \s+[^-][^;\n\s]+ )*
+				(?! (?: -- | —) )
 			</string>
 			<key>name</key>
 			<string>keyword.control.secondary.end.onyx</string>
@@ -1375,7 +1289,11 @@
 			<key>comment</key>
 			<string> as above, just doesn't need a 'end' and does a logic operation</string>
 			<key>match</key>
-			<string>(?&lt;![-.\x{80}-\x{10FFFF}\w])(and|not|or)(?![.\x{80}-\x{10FFFF}\w?!-])</string>
+			<string>(?x)
+				(?&lt;! [-.\x{80}-\x{10FFFF}\w])
+				(and|not|or)
+				(?![.\x{80}-\x{10FFFF}\w?!-])
+			</string>
 			<key>name</key>
 			<string>keyword.operator.logical.onyx</string>
 		</dict>
@@ -1384,7 +1302,7 @@
 			<key>comment</key>
 			<string> just as above but being not a logical operation</string>
 			<key>match</key>
-			<string>(?&lt;![-.\x{80}-\x{10FFFF}\w])(alias|alias_method|break|next|pointerof|typeof|sizeof|instance_sizeof|zredo|retry|~\.|~&gt;|~~&gt;|:|=&gt;|return|breaking|nop|super|undef|yield)(?![.\x{80}-\x{10FFFF}\w?!-])|\bdefined\?|\bblock_given\?</string>
+			<string>(?&lt;! [-.\x{80}-\x{10FFFF}\w])(alias|alias_method|break|next|pointerof|typeof|sizeof|instance_sizeof|zredo|retry|~\.|~&gt;|~~&gt;|:|=&gt;|return|breaking|nop|super|undef|yield)(?![.\x{80}-\x{10FFFF}\w?!-])|\bdefined\?|\bblock_given\?</string>
 			<key>name</key>
 			<string>keyword.control.pseudo-method.onyx</string>
 		</dict>
@@ -1411,14 +1329,22 @@
 			<key>comment</key>
 			<string> everything being a method but having a special function is a..</string>
 			<key>match</key>
-			<string>(?&lt;![-.\x{80}-\x{10FFFF}\w])(init|initialize|new|loop|raise|getter|setter|property|describe|it|with|delegate|def_hash|def_equals|def_equals_and_hash|forward_missing_to|record|assert_responds_to)(?![.\x{80}-\x{10FFFF}\w?!-])[!?]?</string>
+			<string>(?x)
+				(?&lt;! [-.\x{80}-\x{10FFFF}\w])
+				(init|initialize|new|loop|raise|getter|setter|property|describe|it|with|delegate|def_hash|def_equals|def_equals_and_hash|forward_missing_to|record|assert_responds_to)
+				(?![.\x{80}-\x{10FFFF}\w?!-])[!?]?
+			</string>
 			<key>name</key>
 			<string>keyword.other.special-method.onyx</string>
 		</dict>
 
 		<dict>
 			<key>begin</key>
-			<string>\b(require|gem)\b</string>
+			<string>(?x)
+				(?&lt;! [-.\x{80}-\x{10FFFF}\w])
+				(require)
+				(?![.\x{80}-\x{10FFFF}\w?!-])
+			</string>
 			<key>captures</key>
 			<dict>
 				<key>1</key>
@@ -1465,13 +1391,13 @@
 
 
 
-		<dict>
+<!-- 		<dict>
 			<key>match</key>
 			<string>(?x) \x{2039}|\x{203A}| \x{2329}|\x{232A}| \x{ff08}|\x{ff09} </string>
 			<key>name</key>
 			<string>punctuation.section.other.onyx</string>
 		</dict>
-
+ -->
 
 		<dict>
 			<key>name</key>
@@ -1481,7 +1407,7 @@
 			<string>(?x)
 				(
 					\$?
-					['`:.~^]\s*
+					['`.~^]\s*
 					(?:[&lt;\[]?[*A-Z][\[\]&lt;&gt;\w\x{80}-\x{10FFFF}]*)|(?:&lt;&gt;)
 				)|(
 					\$?
@@ -1579,14 +1505,14 @@
 
 		<dict>
 			<key>match</key>
-			<string>(?&lt;![-\x{80}-\x{10FFFF}\w])[A-Z\x{80}-\x{10FFFF}][-\w\x{80}-\x{10FFFF}]*</string>
+			<string>(?&lt;! [-\x{80}-\x{10FFFF}\w])[A-Z\x{80}-\x{10FFFF}][-\w\x{80}-\x{10FFFF}]*</string>
 			<key>name</key>
 			<string>support.class.onyx</string>
 		</dict>
 
 		<dict>
 			<key>match</key>
-			<string>(?&lt;![-\x{80}-\x{10FFFF}\w])[A-Z\x{80}-\x{10FFFF}][-\w\x{80}-\x{10FFFF}]*\b</string>
+			<string>(?&lt;! [-\x{80}-\x{10FFFF}\w])[A-Z\x{80}-\x{10FFFF}][-\w\x{80}-\x{10FFFF}]*\b</string>
 			<key>name</key>
 			<string>variable.other.constant.onyx</string>
 		</dict>
@@ -1594,7 +1520,7 @@
 
 		<dict>
 			<key>match</key>
-			<string>(?&lt;![-\w\x{80}-\x{10FFFF}])(0[xX]\h(?&gt;_?\h)*|\d(?&gt;_?\d)*(\.(?![^[:space:][:digit:]])(?&gt;_?\d)*)?([eE][-+]?\d(?&gt;_?\d)*)?|0[bB][01]+)(_?(u8|u16|u32|u64|i8|i16|i32|i64|f32|f64))?\b</string>
+			<string>(?&lt;! [-\w\x{80}-\x{10FFFF}])(0[xX]\h(?&gt;_?\h)*|\d(?&gt;_?\d)*(\.(?![^[:space:][:digit:]])(?&gt;_?\d)*)?([eE][-+]?\d(?&gt;_?\d)*)?|0[bB][01]+)(_?(u8|u16|u32|u64|i8|i16|i32|i64|f32|f64))?\b</string>
 			<key>name</key>
 			<string>constant.numeric.onyx</string>
 		</dict>
@@ -2556,634 +2482,34 @@
 			</array>
 		</dict>
 
-
-<!--
-
-
-	*TODO* OLD HEREDOC SYNTAXES - RE-USE SUB-EXPR'S IF WANTED!
-
-
-		<dict>
-			<key>begin</key>
-			<string>^__END__\n</string>
-			<key>captures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>string.unquoted.program-block.onyx</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>__END__ marker</string>
-			<key>contentName</key>
-			<string>text.plain</string>
-			<key>end</key>
-			<string>(?=not)impossible</string>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>begin</key>
-					<string>(?=&lt;?xml|&lt;(?i:html\b)|!DOCTYPE (?i:html\b))</string>
-					<key>end</key>
-					<string>(?=not)impossible</string>
-					<key>name</key>
-					<string>text.html.embedded.onyx</string>
-					<key>patterns</key>
-					<array>
-						<dict>
-							<key>include</key>
-							<string>text.html.basic</string>
-						</dict>
-					</array>
-				</dict>
-			</array>
-		</dict>
-
-		<dict>
-			<key>begin</key>
-			<string>(?&gt;&lt;&lt;-("?)((?:[_\w]+_|)HTML)\b\1)</string>
-			<key>beginCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.begin.onyx</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>heredoc with embedded HTML and indented terminator</string>
-			<key>contentName</key>
-			<string>text.html.embedded.onyx</string>
-			<key>end</key>
-			<string>\s*\2$</string>
-			<key>endCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.end.onyx</string>
-				</dict>
-			</dict>
-			<key>name</key>
-			<string>string.unquoted.embedded.html.onyx</string>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>include</key>
-					<string>#heredoc</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>text.html.basic</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#interpolated_onyx</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#escaped_char</string>
-				</dict>
-			</array>
-		</dict>
-
-		<dict>
-			<key>begin</key>
-			<string>(?&gt;&lt;&lt;-("?)((?:[_\w]+_|)SQL)\b\1)</string>
-			<key>beginCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.begin.onyx</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>heredoc with embedded SQL and indented terminator</string>
-			<key>contentName</key>
-			<string>text.sql.embedded.onyx</string>
-			<key>end</key>
-			<string>\s*\2$</string>
-			<key>endCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.end.onyx</string>
-				</dict>
-			</dict>
-			<key>name</key>
-			<string>string.unquoted.embedded.sql.onyx</string>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>include</key>
-					<string>#heredoc</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>source.sql</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#interpolated_onyx</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#escaped_char</string>
-				</dict>
-			</array>
-		</dict>
-
-		<dict>
-			<key>begin</key>
-			<string>(?&gt;&lt;&lt;-("?)((?:[_\w]+_|)CSS)\b\1)</string>
-			<key>beginCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.begin.onyx</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>heredoc with embedded css and intented terminator</string>
-			<key>contentName</key>
-			<string>text.css.embedded.onyx</string>
-			<key>end</key>
-			<string>\s*\2$</string>
-			<key>endCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.end.onyx</string>
-				</dict>
-			</dict>
-			<key>name</key>
-			<string>string.unquoted.embedded.css.onyx</string>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>include</key>
-					<string>#heredoc</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>source.css</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#interpolated_onyx</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#escaped_char</string>
-				</dict>
-			</array>
-		</dict>
-
-		<dict>
-			<key>begin</key>
-			<string>(?&gt;&lt;&lt;-("?)((?:[_\w]+_|)CPP)\b\1)</string>
-			<key>beginCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.begin.onyx</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>heredoc with embedded c++ and intented terminator</string>
-			<key>contentName</key>
-			<string>text.c++.embedded.onyx</string>
-			<key>end</key>
-			<string>\s*\2$</string>
-			<key>endCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.end.onyx</string>
-				</dict>
-			</dict>
-			<key>name</key>
-			<string>string.unquoted.embedded.cplusplus.onyx</string>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>include</key>
-					<string>#heredoc</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>source.c++</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#interpolated_onyx</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#escaped_char</string>
-				</dict>
-			</array>
-		</dict>
-
-		<dict>
-			<key>begin</key>
-			<string>(?&gt;&lt;&lt;-("?)((?:[_\w]+_|)C)\b\1)</string>
-			<key>beginCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.begin.onyx</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>heredoc with embedded c++ and intented terminator</string>
-			<key>contentName</key>
-			<string>text.c.embedded.onyx</string>
-			<key>end</key>
-			<string>\s*\2$</string>
-			<key>endCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.end.onyx</string>
-				</dict>
-			</dict>
-			<key>name</key>
-			<string>string.unquoted.embedded.c.onyx</string>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>include</key>
-					<string>#heredoc</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>source.c</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#interpolated_onyx</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#escaped_char</string>
-				</dict>
-			</array>
-		</dict>
-
-		<dict>
-			<key>begin</key>
-			<string>(?&gt;&lt;&lt;-("?)((?:[_\w]+_|)(?:JS|JAVASCRIPT))\b\1)</string>
-			<key>beginCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.begin.onyx</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>heredoc with embedded javascript and intented terminator</string>
-			<key>contentName</key>
-			<string>text.js.embedded.onyx</string>
-			<key>end</key>
-			<string>\s*\2$</string>
-			<key>endCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.end.onyx</string>
-				</dict>
-			</dict>
-			<key>name</key>
-			<string>string.unquoted.embedded.js.onyx</string>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>include</key>
-					<string>#heredoc</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>source.js</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#interpolated_onyx</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#escaped_char</string>
-				</dict>
-			</array>
-		</dict>
-
-		<dict>
-			<key>begin</key>
-			<string>(?&gt;&lt;&lt;-("?)((?:[_\w]+_|)JQUERY)\b\1)</string>
-			<key>beginCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.begin.onyx</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>heredoc with embedded javascript and intented terminator</string>
-			<key>contentName</key>
-			<string>text.js.jquery.embedded.onyx</string>
-			<key>end</key>
-			<string>\s*\2$</string>
-			<key>endCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.end.onyx</string>
-				</dict>
-			</dict>
-			<key>name</key>
-			<string>string.unquoted.embedded.js.jquery.onyx</string>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>include</key>
-					<string>#heredoc</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>source.js.jquery</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#interpolated_onyx</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#escaped_char</string>
-				</dict>
-			</array>
-		</dict>
-
-		<dict>
-			<key>begin</key>
-			<string>(?&gt;&lt;&lt;-("?)((?:[_\w]+_|)(?:SH|SHELL))\b\1)</string>
-			<key>beginCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.begin.onyx</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>heredoc with embedded shell and intented terminator</string>
-			<key>contentName</key>
-			<string>text.shell.embedded.onyx</string>
-			<key>end</key>
-			<string>\s*\2$</string>
-			<key>endCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.end.onyx</string>
-				</dict>
-			</dict>
-			<key>name</key>
-			<string>string.unquoted.embedded.shell.onyx</string>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>include</key>
-					<string>#heredoc</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>source.shell</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#interpolated_onyx</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#escaped_char</string>
-				</dict>
-			</array>
-		</dict>
-
-		<dict>
-			<key>begin</key>
-			<string>(?&gt;&lt;&lt;-("?)((?:[_\w]+_|)RUBY)\b\1)</string>
-			<key>beginCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.begin.onyx</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>heredoc with embedded onyx and intented terminator</string>
-			<key>contentName</key>
-			<string>text.onyx.embedded.onyx</string>
-			<key>end</key>
-			<string>\s*\2$</string>
-			<key>endCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.end.onyx</string>
-				</dict>
-			</dict>
-			<key>name</key>
-			<string>string.unquoted.embedded.onyx.onyx</string>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>include</key>
-					<string>#heredoc</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>source.onyx</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#interpolated_onyx</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#escaped_char</string>
-				</dict>
-			</array>
-		</dict>
-
-		<dict>
-			<key>begin</key>
-			<string>(?&gt;\=\s*&lt;&lt;(\w+))</string>
-			<key>beginCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.begin.onyx</string>
-				</dict>
-			</dict>
-			<key>end</key>
-			<string>^\1$</string>
-			<key>endCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.end.onyx</string>
-				</dict>
-			</dict>
-			<key>name</key>
-			<string>string.unquoted.heredoc.onyx</string>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>include</key>
-					<string>#heredoc</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#interpolated_onyx</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#escaped_char</string>
-				</dict>
-			</array>
-		</dict>
-
-		<dict>
-			<key>begin</key>
-			<string>(?&gt;&lt;&lt;-(\w+))</string>
-			<key>beginCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.begin.onyx</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>heredoc with indented terminator</string>
-			<key>end</key>
-			<string>\s*\1$</string>
-			<key>endCaptures</key>
-			<dict>
-				<key>0</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.definition.string.end.onyx</string>
-				</dict>
-			</dict>
-			<key>name</key>
-			<string>string.unquoted.heredoc.onyx</string>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>include</key>
-					<string>#heredoc</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#interpolated_onyx</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#escaped_char</string>
-				</dict>
-			</array>
-		</dict>
-
--->
- 		<dict>
-			<key>begin</key>
-			<string>(?x)
-				(?&lt;=
-					\{ | do | \{\s | do\s
-				)(
-					\|
-				)
-			</string>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.separator.variable.onyx</string>
-				</dict>
-			</dict>
-			<key>end</key>
-			<string>(\|)</string>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>match</key>
-					<string>[_a-zA-Z][_a-zA-Z0-9]*</string>
-					<key>name</key>
-					<string>variable.other.block.onyx</string>
-				</dict>
-				<dict>
-					<key>match</key>
-					<string>,</string>
-					<key>name</key>
-					<string>punctuation.separator.variable.onyx</string>
-				</dict>
-			</array>
-		</dict>
-
-		<dict>
-			<key>match</key>
-			<string>\(&lt;|&gt;\)</string>
-			<key>name</key>
-			<string>punctuation.section.array.onyx</string>
-		</dict>
-
 		<dict>
 			<key>match</key>
 			<string>&lt;\[|\]&gt;</string>
 			<key>name</key>
-			<string>punctuation.section.array.onyx</string>
+			<string>punctuation.section.tuple.onyx</string>
 		</dict>
 
 		<dict>
 			<key>match</key>
-			<string>\[&lt;|&gt;\]</string>
+			<string>&lt;\{|\}&gt;</string>
 			<key>name</key>
-			<string>punctuation.section.array.onyx</string>
-		</dict>
-
-		<dict>
-			<key>match</key>
-			<string>{&lt;|&gt;}</string>
-			<key>name</key>
-			<string>punctuation.section.array.onyx</string>
+			<string>punctuation.section.tuple.onyx</string>
 		</dict>
 
 		<dict>
 			<key>match</key>
 			<string>\{|\}</string>
 			<key>name</key>
-			<string>punctuation.section.scope.onyx</string>
+			<string>punctuation.section.set.onyx</string>
+		</dict>
+
+		<!-- *TODO* this also has the purpose of generic grouping, amongst thousand others -->
+		<dict>
+			<key>match</key>
+			<string>\(|\)</string>
+			<key>name</key>
+			<string>punctuation.section.group.onyx</string>
+			<!-- <string>punctuation.section.set.onyx</string> -->
 		</dict>
 
 		<dict>
@@ -3193,23 +2519,28 @@
 			<string>punctuation.section.array.onyx</string>
 		</dict>
 
-
-		<dict>
-			<key>match</key>
-			<string>\(|\)</string>
-			<key>name</key>
-			<string>punctuation.section.function.onyx</string>
-		</dict>
-
 		<dict>
 			<key>name</key>
 			<string>keyword.operator.comparison.onyx</string>
 
 			<key>match</key>
 			<string>(?x)
-				(&lt;=&gt;|&lt;(?!&lt;|=)|&gt;(?!&lt;|=|&gt;)|&lt;=|&gt;=|===|==|=~|!=|!~|(?&lt;=[ \t])\?)
-				|
-				( (?: not|and|or|isnt|is ) (?=[\s\n]) )
+				(
+					&lt;=&gt; |
+					&lt; (?! &lt; | =) |
+					&gt; (?! &lt; | = | &gt;) |
+					&lt;= |
+					&gt;= |
+					=== |
+					== |
+					=~ |
+					!= |
+					!~ |
+					(?&lt;= [ \t]) \?
+				)|(
+					(?: not | and | or | isnt | is )
+					(?= [\s\n])
+				)
 			</string>
 
 		</dict>
@@ -3233,35 +2564,20 @@
 
 		</dict>
 
-
-		<dict>
+<!--
+		*TODO* this has two uses. The primary is just "nest-block-starter"
+ 		<dict>
 			<key>match</key>
 			<string>=&gt;</string>
 			<key>name</key>
 			<string>punctuation.separator.key-value</string>
 		</dict>
-
+ -->
 		<dict>
 			<key>match</key>
-			<string>&lt;&lt;=|%=|&amp;=|\*=|\*\*=|\+=|\-=|\^=|\|{1,2}=|&lt;&lt;|\.\.</string>
+			<string>&lt;&lt;=|%=|&amp;=|\*=|\*\*=|\+=|\-=|\^=|\|{1,2}=|\.=|&lt;&lt;|\.\.</string>
 			<key>name</key>
 			<string>keyword.operator.assignment.augmented.onyx</string>
-		</dict>
-
-		<dict>
-			<key>match</key>
-			<string>(?x)
-				(?&lt;=[ \t])
-				!+
-				| (?&lt;![-\w\x{80}-\x{10FFFF}]) not (?![.\x{80}-\x{10FFFF}\w?!-])
-				| &amp;&amp;
-				| (?&lt;![-\w\x{80}-\x{10FFFF}]) and (?![.\x{80}-\x{10FFFF}\w?!-])
-				| \|\|
-				| (?&lt;![-\w\x{80}-\x{10FFFF}]) or (?![.\x{80}-\x{10FFFF}\w?!-])
-				| \^
-			</string>
-			<key>name</key>
-			<string>keyword.operator.logical.onyx</string>
 		</dict>
 
 		<dict>
@@ -3280,18 +2596,21 @@
 
 		<dict>
 			<key>match</key>
-			<string>\||~|&gt;&gt;|\\</string>
+			<string>(?x)
+				\| | ~ | &gt;&gt; | \\
+			</string>
 			<key>name</key>
 			<string>keyword.operator.other.onyx</string>
 		</dict>
 
+<!-- 		*TODO* This has the primary purpose of nest-block-starter
 		<dict>
 			<key>match</key>
 			<string>:</string>
 			<key>name</key>
 			<string>punctuation.separator.other.onyx</string>
 		</dict>
-
+ -->
 		<dict>
 			<key>match</key>
 			<string>\;</string>
@@ -3317,6 +2636,15 @@
 
 
 
+	<!--
+					########  ######## ########   #######
+					##     ## ##       ##     ## ##     ##
+					##     ## ##       ##     ## ##     ##
+					########  ######   ########  ##     ##
+					##   ##   ##       ##        ##     ##
+					##    ##  ##       ##        ##     ##
+					##     ## ######## ##         #######
+	-->
 	<key>repository</key>
 
 	<dict>
@@ -3347,14 +2675,72 @@
 		<dict>
 			<key>patterns</key>
 			<array>
-				<dict>
-					<key>match</key>
-					<string>(\{\%|\%\}|\{=|=\})</string>
+<!--				<dict>
+ 					<key>match</key>
+					<string>(?x)
+						(?:
+							\{\% |
+							\{= |
+							\%\} |
+							=\}
+						)
+					</string>
 					<key>name</key>
 					<string>keyword.operator.macro.onyx</string>
 				</dict>
+ -->
+				<dict>
+					<key>begin</key>
+					<string>(?x)
+						\{\% |
+						\{=
+					</string>
+					<key>end</key>
+					<string>(?x)
+						\%\} |
+						=\}
+					</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>0</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.operator.macro.onyx</string>
+						</dict>
+					</dict>
+					<key>endCaptures</key>
+					<dict>
+						<key>0</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.operator.macro.onyx</string>
+						</dict>
+					</dict>
+					<key>captures</key>
+					<dict>
+						<key>0</key>
+						<dict>
+							<key>name</key>
+							<string>punctuation.section.embedded.onyx</string>
+						</dict>
+					</dict>
+					<key>name</key>
+					<string>source.onyx.embedded.source</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>$self</string>
+						</dict>
+					</array>
+				</dict>
 
-<!-- 				<dict>
+<!--
+ 				<dict>
+					<key>name</key>
+					<string>source.onyx.embedded.source</string>
+					<key>match</key>
+					<string>\{\{(\}\})</string>
 					<key>captures</key>
 					<dict>
 						<key>0</key>
@@ -3368,15 +2754,32 @@
 							<string>source.onyx.embedded.source.empty</string>
 						</dict>
 					</dict>
-					<key>match</key>
-					<string>\{\{(\}\})</string>
-					<key>name</key>
-					<string>source.onyx.embedded.source</string>
 				</dict>
  -->
+
 				<dict>
 					<key>begin</key>
-					<string>\{(?&gt;!\{=)</string>
+					<string>(?x)
+						\{ (?! [=%] )
+					</string>
+					<key>end</key>
+					<string>(?x)(?&lt;! [=%]) \}</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>0</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.operator.interpolation.onyx</string>
+						</dict>
+					</dict>
+					<key>endCaptures</key>
+					<dict>
+						<key>0</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.operator.interpolation.onyx</string>
+						</dict>
+					</dict>
 					<key>captures</key>
 					<dict>
 						<key>0</key>
@@ -3385,8 +2788,6 @@
 							<string>punctuation.section.embedded.onyx</string>
 						</dict>
 					</dict>
-					<key>end</key>
-					<string>\}</string>
 					<key>name</key>
 					<string>source.onyx.embedded.source</string>
 					<key>patterns</key>
@@ -3401,6 +2802,8 @@
 						</dict>
 					</array>
 				</dict>
+
+
 <!-- 				<dict>
 					<key>captures</key>
 					<dict>
@@ -3531,7 +2934,7 @@
 		<key>nest_curly</key>
 		<dict>
 			<key>begin</key>
-			<string>\{</string>
+			<string>(?x)\{ (?! [=%])</string>
 			<key>captures</key>
 			<dict>
 				<key>0</key>
@@ -3541,7 +2944,7 @@
 				</dict>
 			</dict>
 			<key>end</key>
-			<string>\}</string>
+			<string>(?x)(?&lt;! [=%]) \}</string>
 			<key>patterns</key>
 			<array>
 				<dict>
@@ -3557,7 +2960,7 @@
 			<array>
 				<dict>
 					<key>begin</key>
-					<string>\{</string>
+					<string>(?x)\{ (?! [=%])</string>
 					<key>captures</key>
 					<dict>
 						<key>0</key>
@@ -3567,7 +2970,7 @@
 						</dict>
 					</dict>
 					<key>end</key>
-					<string>\}</string>
+					<string>(?x)(?&lt;! [=%]) \}</string>
 					<key>patterns</key>
 					<array>
 						<dict>

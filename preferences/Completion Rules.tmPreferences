@@ -6,8 +6,8 @@
     <string>source.onyx</string>
     <key>settings</key>
     <dict>
-        <key>cancelCompletion</key>
-        <string>^\s*(else|end|do|begin|rescue|(class|def|module|include)$</string>
+        <!-- <key>cancelCompletion</key>
+        <string>^\s*(else|end|do|begin|rescue|(class|def|module|include)$</string> -->
     </dict>
 </dict>
 </plist>
